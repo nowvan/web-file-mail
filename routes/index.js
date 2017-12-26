@@ -17,13 +17,16 @@ var mailTransport = nodemailer.createTransport({
 
 /* GET home page. */
 //req.body.
-router.post('/uploadfile', function(req, res) {	
+router.post('/uploadfile', function(req, res) {
 	//檔案存入路徑
+
+	console.log(req.body.reqParam.name);
+
 	var path = '../public/uploads';
 	fs.mkdir(path, function (err) {
 		if (err) {
 			console.log('failed to create directory', err);
-		} 
+		}
 	});
 	//multer儲存資訊
 	var originalname;
@@ -42,7 +45,7 @@ router.post('/uploadfile', function(req, res) {
 	var upload = multer({
 		storage : storage
 	}).single('uploadfile');
-	console.log(req.session.companyname);
+
 	// console.log(req);
 	// console.log(Date.now());
 	upload(req, res, function(err) {		
@@ -50,19 +53,19 @@ router.post('/uploadfile', function(req, res) {
 			console.log('Error Occured');
 			return;
 		}
-		console.log(req.file);
+		// console.log(req.file);
 		console.log('file uploaded');
 		
 		mailTransport.sendMail({
 	        from: '"BIAU": biaufileserver@gmail.com',
-	        to: req.body.mail,
+	        to: req.body.reqParam.mail,
 	        subject: 'BIAU感謝您的註冊',
 	        html: '<h2>有訂單喔感謝您的註冊</h2>'
-	        +'<p>'+req.body.name+'</p>'
-	        +'<p>'+req.body.clothType+'</p>'
-	        +'<p>'+req.body.color+'</p>'
-	        +'<p>'+req.body.numbers+'</p>'
-	        +'<p>'+req.body.desc+'</p>'
+	        +'<p>'+req.body.reqParam.name+'</p>'
+	        +'<p>'+req.body.reqParam.clothType+'</p>'
+	        +'<p>'+req.body.reqParam.color+'</p>'
+	        +'<p>'+req.body.reqParam.numbers+'</p>'
+	        +'<p>'+req.body.reqParam.desc+'</p>'
 	    }, function(err) {
 	        if(err){
 	            console.error('Unable to send confirmation: ' + err.stack);
