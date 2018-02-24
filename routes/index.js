@@ -39,7 +39,7 @@ router.post('/uploadfile',upload.any(), function(req, res,next) {
 			
 			mailTransport.sendMail({
 		        from: '"AW": amosnowvan@gmail.com',
-		        to: 'echoplus2016.gmail.com',
+		        to: 'echoplus2016@gmail.com',
 		        subject: '網頁訂單',
 		        html: 
 		        	
