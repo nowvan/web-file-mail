@@ -2,7 +2,7 @@ var express = require('express');
 var multer = require('multer');
 var fs = require('fs');
 var nodemailer = require('nodemailer');
-var credentials = require('views/credentials');
+//var credentials = require('views/credentials');
 var router = express.Router();
 
 
@@ -12,8 +12,8 @@ var upload = multer({dest:'public/uploads/'});
 var mailTransport = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-        user: credentials.gmail.user,
-        pass: credentials.gmail.pass
+        user: 'amosnowvan@gmail.com',
+        pass: 'nowvanamos0707'
     }
 });
 
