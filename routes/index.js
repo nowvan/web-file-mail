@@ -6,7 +6,7 @@ var credentials = require('../views/credentials');
 var router = express.Router();
 
 
-var upload = multer({dest:'../public/uploads/'});
+var upload = multer({dest:'/public/uploads/'});
 
 //創建寄信工具
 var mailTransport = nodemailer.createTransport({
@@ -31,7 +31,7 @@ router.post('/uploadfile',upload.any(), function(req, res,next) {
 			console.log(file);
 			
 			var filename1 = file.originalname;
-			fs.rename(file.path, '../public/images/'+filename1,function(err){
+			fs.rename(file.path, '/public/images/'+filename1,function(err){
 				if(err)throw err;
 				
 				console.log("file uploaded.....");
