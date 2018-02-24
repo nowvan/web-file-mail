@@ -2,7 +2,7 @@ var express = require('express');
 var multer = require('multer');
 var fs = require('fs');
 var nodemailer = require('nodemailer');
-var credentials = require('../views/credentials');
+var credentials = require('views/credentials');
 var router = express.Router();
 
 
