@@ -6,6 +6,8 @@ var credentials = require('../views/credentials');
 var router = express.Router();
 
 
+var upload = multer({dest:'../public/uploads/'});
+
 //創建寄信工具
 var mailTransport = nodemailer.createTransport({
     service: 'Gmail',
@@ -17,65 +19,86 @@ var mailTransport = nodemailer.createTransport({
 
 /* GET home page. */
 //req.body.
-router.post('/uploadfile', function(req, res) {
+router.post('/uploadfile',upload.any(), function(req, res,next) {
 	//檔案存入路徑
-
-	console.log(req.body.reqParam.name);
-
-	var path = '../public/uploads';
-	fs.mkdir(path, function (err) {
-		if (err) {
-			console.log('failed to create directory', err);
-		}
-	});
-	//multer儲存資訊
-	var originalname;
-	var storage = multer.diskStorage({
-		destination : function(req, file, callback) {
-			callback(null, path);
-		},
-		filename : function(req, file, callback) {
-			var fileFormat = (file.originalname).split(".");
-			 //console.log(fileFormat);
-			 originalname = file.originalname.slice(0,
-					(fileFormat[fileFormat.length - 1].length + 1) * -1);
-			callback(null, originalname + '-' + Date.now() + "."+ fileFormat[fileFormat.length - 1]);
-		}
-	});
-	var upload = multer({
-		storage : storage
-	}).single('uploadfile');
-
-	// console.log(req);
-	// console.log(Date.now());
-	upload(req, res, function(err) {		
-		if (err) {
-			console.log('Error Occured');
-			return;
-		}
-		// console.log(req.file);
-		console.log('file uploaded');
-		
+	console.log("有近來");
+	console.log(req.body);
+	console.log(req.files);
+	
+	if(req.files.length != 0){
+		console.log("havefile");
+		req.files.forEach(function(file){
+			console.log(file);
+			
+			var filename1 = file.originalname;
+			fs.rename(file.path, '../public/images/'+filename1,function(err){
+				if(err)throw err;
+				
+				console.log("file uploaded.....");
+			});
+			
+			mailTransport.sendMail({
+		        from: '"AW": amosnowvan@gmail.com',
+		        to: 'echoplus2016.gmail.com',
+		        subject: '網頁訂單',
+		        html: 
+		        	
+     	
+		        '<h2>Echo+網頁訂單</h2>'
+		        +'<p>客戶名稱:'+req.body.name+'</p>'
+		        +'<p>客戶信箱:'+req.body.mail+'</p>'
+		        +'<p>款式:'+req.body.clothType+'</p>'
+		        +'<p>色號:'+req.body.color+'</p>'
+		        +'<p>件數:'+req.body.numbers+'</p>'
+		        +'<p>附加說明:'+req.body.desc+'</p>'
+		        	,
+		      //附件檔案
+		        attachments: [ {
+		            filename: filename1,
+		            path: '../public/images/'+filename1
+		        }]
+		    }, function(err) {
+		        if(err){
+		            console.error('Unable to send confirmation: ' + err.stack);
+		            res.send('上傳失敗');
+		        		}
+		        else{
+		        	console.log('email send completed');
+		        	res.send('上傳成功');
+		        }
+		    });				
+		});
+	}
+	else{
+		console.log("nofile");
 		mailTransport.sendMail({
-	        from: '"BIAU": biaufileserver@gmail.com',
-	        to: req.body.reqParam.mail,
-	        subject: 'BIAU感謝您的註冊',
-	        html: '<h2>有訂單喔感謝您的註冊</h2>'
-	        +'<p>'+req.body.reqParam.name+'</p>'
-	        +'<p>'+req.body.reqParam.clothType+'</p>'
-	        +'<p>'+req.body.reqParam.color+'</p>'
-	        +'<p>'+req.body.reqParam.numbers+'</p>'
-	        +'<p>'+req.body.reqParam.desc+'</p>'
+	        from: '"AW": amosnowvan@gmail.com',
+	        to: req.body.mail,
+	        subject: '網頁訂單',
+	        html: 
+	        	
+ 	
+	        '<h2>Echo+網頁訂單</h2>'
+	        +'<p>客戶名稱:'+req.body.name+'</p>'
+	        +'<p>客戶信箱:'+req.body.mail+'</p>'
+	        +'<p>款式:'+req.body.clothType+'</p>'
+	        +'<p>色號:'+req.body.color+'</p>'
+	        +'<p>件數:'+req.body.numbers+'</p>'
+	        +'<p>附加說明:'+req.body.desc+'</p>'
+	        	
 	    }, function(err) {
 	        if(err){
 	            console.error('Unable to send confirmation: ' + err.stack);
+	            res.send('上傳失敗');
 	        		}
+	        else{
+	        	console.log('email send completed');
+	        	res.send('上傳成功');
+	        }
 	    });
-	});
-	
-	
-	
-	
+	}
+    
+				
 });
-
+	
 module.exports = router;
